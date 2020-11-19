@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ResultActivity extends AppCompatActivity {
 
@@ -22,22 +23,17 @@ public class ResultActivity extends AppCompatActivity {
 
         Bundle StudentData = getIntent().getExtras();
 
-        if(StudentData!=null){
-            String StudentID = StudentData.getString("STUID");
-            String StudentName = StudentData.getString("STUNAME");
-            String StudentRollNumber = StudentData.getString("STUROLL");
-            long  StudentRegistrationNumber = StudentData.getLong("STUREGD");
-            long StudentPhoneNumber = StudentData.getLong("STUPHONE");
-            String StudentEmail = StudentData.getString("STUEMAIL");
-            String StudentBloodGroup = StudentData.getString("STUBLOOD");
+        if(StudentData!=null) {
+            Student studentDetails = (Student) StudentData.getSerializable("STUDENT");
+            Toast.makeText(ResultActivity.this, "Welcome " + studentDetails.getStudentName() + ".", Toast.LENGTH_LONG).show();
 
-            dTvStudentID.setText(StudentID);
-            dTvStudentName.setText(StudentName);
-            dTvStudentRoll.setText(StudentRollNumber);
-            dTvStudentRegd.setText(String.valueOf(StudentRegistrationNumber));
-            dTvStudentPhone.setText(String.valueOf(StudentPhoneNumber));
-            dTvEmail.setText(StudentEmail);
-            dTvStudentBloodGroup.setText(StudentBloodGroup);
+            dTvStudentID.setText(studentDetails.getStudentID());
+            dTvStudentName.setText(studentDetails.getStudentName());
+            dTvStudentRoll.setText(studentDetails.getStudentRollNumber());
+            dTvStudentRegd.setText(String.valueOf(studentDetails.getStudentRegistrationNumber()));
+            dTvStudentPhone.setText(String.valueOf(studentDetails.getStudentPhoneNumber()));
+            dTvEmail.setText(studentDetails.getStudentEmailAddress());
+            dTvStudentBloodGroup.setText(studentDetails.getStudentBloodGroup());
         }
     }
 }

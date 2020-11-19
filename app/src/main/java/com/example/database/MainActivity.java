@@ -43,13 +43,10 @@ public class MainActivity extends AppCompatActivity {
         BloodGroup.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if(adapterView.getItemAtPosition(i).equals("Select Student Blood Group")){
-                    Toast.makeText(MainActivity.this, "Please Select the Student Blood Group.", Toast.LENGTH_LONG).show();
-                }else{
-                    SelectedBloodGroup = adapterView.getItemAtPosition(i).toString();
-                    Toast.makeText(MainActivity.this, SelectedBloodGroup+"Selected", Toast.LENGTH_LONG).show();
+                if(i>0) {
+                    SelectedBloodGroup = dBloodGroups[i];
+                    Toast.makeText(MainActivity.this, SelectedBloodGroup +" Selected.", Toast.LENGTH_SHORT).show();
                 }
-                    /*SelectedBloodGroup = dBloodGroups[i];*/
             }
 
             @Override
@@ -80,21 +77,25 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "Please Enter the Student Registration Number.", Toast.LENGTH_LONG).show();
         }else if(stuPhoneNumber==0){
             Toast.makeText(MainActivity.this, "Please Enter the Student Phone Number.", Toast.LENGTH_LONG).show();
-        }/*else if(SelectedBloodGroup == "Select Student Blood Group"){
+        }else if(SelectedBloodGroup.isEmpty()){
             Toast.makeText(MainActivity.this, "Please Select the Student Blood Group.", Toast.LENGTH_LONG).show();
-        }*/else{
-            Toast.makeText(MainActivity.this, "Successfully Entered Details. Thank you.", Toast.LENGTH_LONG).show();
+        }else{
+            Toast.makeText(MainActivity.this, "Successfully Entered Details. Thank you.", Toast.LENGTH_SHORT).show();
         }
 
-        if(!stuID.isEmpty() && !stuName.isEmpty() && !stuRollNumber.isEmpty() && stuRegistrationNumber!=0 && stuPhoneNumber!=0 && !stuEmailAddress.isEmpty()) {
+        if(!stuID.isEmpty() && !stuName.isEmpty() && !stuRollNumber.isEmpty() && stuRegistrationNumber!=0 && stuPhoneNumber!=0 && !stuEmailAddress.isEmpty() && !SelectedBloodGroup.isEmpty()) {
+
+            Student newStu = new Student();
+            newStu.setStudentID(stuID);
+            newStu.setStudentName(stuName);
+            newStu.setStudentRollNumber(stuRollNumber);
+            newStu.setStudentRegistrationNumber(stuRegistrationNumber);
+            newStu.setStudentPhoneNumber(stuPhoneNumber);
+            newStu.setStudentEmailAddress(stuEmailAddress);
+            newStu.setStudentBloodGroup(SelectedBloodGroup);
+
             Intent StudentInfo = new Intent(MainActivity.this, ResultActivity.class);
-            StudentInfo.putExtra("STUID", stuID);
-            StudentInfo.putExtra("STUNAME", stuName);
-            StudentInfo.putExtra("STUROLL", stuRollNumber);
-            StudentInfo.putExtra("STUREGD", stuRegistrationNumber);
-            StudentInfo.putExtra("STUPHONE", stuPhoneNumber);
-            StudentInfo.putExtra("STUEMAIL", stuEmailAddress);
-            StudentInfo.putExtra("STUBLOOD", SelectedBloodGroup);
+            StudentInfo.putExtra("STUDENT", newStu);
             startActivity(StudentInfo);
         }
     }
