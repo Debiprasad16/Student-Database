@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.security.PublicKey;
 
 public class Student implements Serializable{
-    /*public String StudentID;
+
+    /*public int id;
+    public String StudentID;
     public String StudentName;
     public String StudentRollNumber;
     public long StudentRegistrationNumber;
@@ -12,6 +14,7 @@ public class Student implements Serializable{
     public String StudentEmailAddress;
     public String StudentBloodGroup;*/
 
+    private int id;
     private String StudentID;
     private String StudentName;
     private String StudentRollNumber;
@@ -19,6 +22,14 @@ public class Student implements Serializable{
     private long  StudentPhoneNumber;
     private String StudentEmailAddress;
     private String StudentBloodGroup;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getStudentID() {
         return StudentID;

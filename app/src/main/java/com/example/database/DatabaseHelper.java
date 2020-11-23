@@ -2,10 +2,13 @@ package com.example.database;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
+
+import java.util.ArrayList;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -41,5 +44,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void insertDataToDatabase(SQLiteDatabase db, Student student){
         ContentValues contentValues = new ContentValues();
+        contentValues.put(COL_STU_ID, student.getStudentID());
+        contentValues.put(COL_STU_NAME, student.getStudentName());
+        contentValues.put(COL_STU_ROLL, student.getStudentRollNumber());
+        contentValues.put(COL_STU_REGN, student.getStudentRegistrationNumber());
+        contentValues.put(COL_STU_PHONE, student.getStudentPhoneNumber());
+        contentValues.put(COL_STU_EMAIL, student.getStudentEmailAddress());
+        contentValues.put(COL_STU_BLOOD, student.getStudentBloodGroup());
+
+        db.insert(TABLE_NAME, null, contentValues);
+    }
+    public  ArrayList<Student> getStudentsFromDatabase(SQLiteDatabase db) {
+        ArrayList<Student> studentList = new ArrayList<>();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM "+TABLE_NAME, null);
+
+        if(cursor.moveToFirst()){
+            do{
+                Student studentInfo = new Student();
+                studentInfo.setId(cursor.getInt(cursor.getColumnIndex(COL_ID)));
+                studentInfo.setStudentID(cursor.getString(cursor.getColumnIndex(COL_STU_ID)));
+                studentInfo.setStudentName(cursor.getString(cursor.getColumnIndex(COL_STU_NAME)));
+                studentInfo.setStudentRollNumber(cursor.getString(cursor.getColumnIndex(COL_STU_ROLL)));
+                studentInfo.setStudentRegistrationNumber(cursor.getLong(cursor.getColumnIndex(COL_STU_REGN)));
+                studentInfo.setStudentPhoneNumber(cursor.getLong(cursor.getColumnIndex(COL_STU_PHONE)));
+                studentInfo.setStudentEmailAddress(cursor.getString(cursor.getColumnIndex(COL_STU_EMAIL)));
+                studentInfo.setStudentBloodGroup(cursor.getString(cursor.getColumnIndex(COL_STU_BLOOD)));
+                studentList.add(studentInfo);
+            }while (cursor.moveToNext());
+        }
+
+        return studentList;
     }
 }

@@ -2,6 +2,7 @@ package com.example.database;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -10,6 +11,8 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,7 +23,11 @@ public class MainActivity extends AppCompatActivity {
     private EditText dEtStudentPhoneNumber;
     private EditText dEtStudentEmailAddress;
 
+    private Spinner BloodGroup;
+
     private String SelectedBloodGroup = "";
+
+    private DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         dEtStudentPhoneNumber = findViewById(R.id.et_stu_phone_number);
         dEtStudentEmailAddress = findViewById(R.id.et_stu_email_address);
 
-        Spinner BloodGroup = findViewById(R.id.spn_blood_group);
+        BloodGroup = findViewById(R.id.spn_blood_group);
         String[] dBloodGroups = getResources().getStringArray(R.array.blood_group);
 
         ArrayAdapter<String> BloodGroupAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, dBloodGroups);
@@ -53,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
+
+        dbHelper = new DatabaseHelper(MainActivity.this);
     }
 
     public void onAdmitStudentClicked(View view){
@@ -94,9 +103,32 @@ public class MainActivity extends AppCompatActivity {
             newStu.setStudentEmailAddress(stuEmailAddress);
             newStu.setStudentBloodGroup(SelectedBloodGroup);
 
-            Intent StudentInfo = new Intent(MainActivity.this, ResultActivity.class);
+            dbHelper.insertDataToDatabase(dbHelper.getWritableDatabase(), newStu);
+
+            dEtStudentID.setText("");
+            dEtStudentName.setText("");
+            dEtStudentRollNumber.setText("");
+            dEtStudentRegistrationNumber.setText("");
+            dEtStudentPhoneNumber.setText("");
+            dEtStudentEmailAddress.setText("");
+            BloodGroup.setSelection(0);
+
+            setResult(Activity.RESULT_OK);
+            finish();
+
+            /*ArrayList<Student> enteredStudentInfo = dbHelper.getStudentsFromDatabase(dbHelper.getReadableDatabase());
+            Toast.makeText(MainActivity.this, "Number of Data in Database "+enteredStudentInfo.size(), Toast.LENGTH_LONG);*/
+
+
+            Intent StudentInfo = new Intent(MainActivity.this, ViewActivity.class);
             StudentInfo.putExtra("STUDENT", newStu);
             startActivity(StudentInfo);
         }
+    }
+
+    public void onCancelClicked(View view){
+        setResult(Activity.RESULT_CANCELED);
+        Toast.makeText(MainActivity.this, "User Cancelled.", Toast.LENGTH_LONG).show();
+        finish();
     }
 }
