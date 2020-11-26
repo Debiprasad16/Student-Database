@@ -20,9 +20,15 @@ public class StudentListAdapter extends RecyclerView.Adapter<StudentListAdapter.
     private Context context;
     private ArrayList<Student> studentList;
 
+    private StudentClickListener listener;
+
     public StudentListAdapter(Context context1, ArrayList<Student> studentLists){
         this.context = context1;
         this.studentList = studentLists;
+    }
+
+    public void setListener(StudentClickListener listener){
+        this.listener = listener;
     }
 
     @NonNull
@@ -45,6 +51,24 @@ public class StudentListAdapter extends RecyclerView.Adapter<StudentListAdapter.
         holder.dTvStudentPhone.setText(String.valueOf(currentStudent.getStudentPhoneNumber()));
         holder.dTvStudentEmail.setText(currentStudent.getStudentEmailAddress());
         holder.dTvStudentBloodGroup.setText(currentStudent.getStudentBloodGroup());
+
+        holder.dLlEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(listener != null){
+                    listener.onEditStudentClicked(currentStudent);
+                }
+            }
+        });
+
+        holder.dLlDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(listener != null){
+                    listener.onDeleteStudentClicked(currentStudent);
+                }
+            }
+        });
     }
 
     @Override
@@ -63,6 +87,9 @@ public class StudentListAdapter extends RecyclerView.Adapter<StudentListAdapter.
        private TextView dTvStudentBloodGroup;
        private LinearLayout dLlrndColor;
 
+       private LinearLayout dLlEdit;
+       private LinearLayout dLlDelete;
+
         public StudentListHolder(@NonNull View itemView) {
             super(itemView);
             dLlrndColor = itemView.findViewById(R.id.rnd_color);
@@ -73,6 +100,13 @@ public class StudentListAdapter extends RecyclerView.Adapter<StudentListAdapter.
             dTvStudentPhone = itemView.findViewById(R.id.tv_stu_phone_number);
             dTvStudentEmail = itemView.findViewById(R.id.tv_stu_email_address);
             dTvStudentBloodGroup = itemView.findViewById(R.id.tv_stu_blood_group);
+            dLlEdit = itemView.findViewById(R.id.ll_edit);
+            dLlDelete = itemView.findViewById(R.id.ll_delete);
         }
+    }
+
+    public interface StudentClickListener{
+        void onEditStudentClicked(Student student);
+        void onDeleteStudentClicked(Student student);
     }
 }

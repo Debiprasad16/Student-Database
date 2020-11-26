@@ -60,13 +60,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:gravity="center">
 
         <Button
+            android:id="@+id/btnUpdate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Admit Student"
-            android:layout_marginRight="120dp"
             android:onClick="onAdmitStudentClicked" />
 
         <Button

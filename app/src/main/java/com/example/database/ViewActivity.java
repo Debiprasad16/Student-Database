@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class ViewActivity extends AppCompatActivity {
+public class ViewActivity extends AppCompatActivity implements StudentListAdapter.StudentClickListener {
 
     private DatabaseHelper dbHelper;
     private RecyclerView dRcStudents;
@@ -23,29 +23,6 @@ public class ViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view);
-
-        /*TextView dTvStudentID = findViewById(R.id.tv_stu_id);
-        TextView dTvStudentName = findViewById(R.id.tv_stu_name);
-        TextView dTvStudentRoll = findViewById(R.id.tv_stu_roll_number);
-        TextView dTvStudentRegd = findViewById(R.id.tv_stu_registration_number);
-        TextView dTvStudentPhone = findViewById(R.id.tv_stu_phone_number);
-        TextView dTvEmail = findViewById(R.id.tv_stu_email_address);
-        TextView dTvStudentBloodGroup = findViewById(R.id.tv_stu_blood_group);
-
-        Bundle StudentData = getIntent().getExtras();
-
-        if(StudentData!=null) {
-            Student studentDetails = (Student) StudentData.getSerializable("STUDENT");
-            Toast.makeText(ViewActivity.this, "Welcome " + studentDetails.getStudentName() + ".", Toast.LENGTH_LONG).show();
-
-            dTvStudentID.setText(studentDetails.getStudentID());
-            dTvStudentName.setText(studentDetails.getStudentName());
-            dTvStudentRoll.setText(studentDetails.getStudentRollNumber());
-            dTvStudentRegd.setText(String.valueOf(studentDetails.getStudentRegistrationNumber()));
-            dTvStudentPhone.setText(String.valueOf(studentDetails.getStudentPhoneNumber()));
-            dTvEmail.setText(studentDetails.getStudentEmailAddress());
-            dTvStudentBloodGroup.setText(studentDetails.getStudentBloodGroup());
-        }*/
 
         dRcStudents = findViewById(R.id.rc_student_list);
         dRcStudents.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
@@ -61,6 +38,7 @@ public class ViewActivity extends AppCompatActivity {
     private void setDataToAdapter(){
         ArrayList<Student> students = dbHelper.getStudentsFromDatabase(dbHelper.getReadableDatabase());
         StudentListAdapter adapter = new StudentListAdapter(ViewActivity.this, students);
+        adapter.setListener(ViewActivity.this);
 
         dRcStudents.setAdapter(adapter);
     }
@@ -68,8 +46,24 @@ public class ViewActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 555 && resultCode == Activity.RESULT_OK){
+        if(requestCode == 555 && resultCode == Activity.RESULT_OK) {
+            setDataToAdapter();
+        }else if(requestCode == 900 &&  resultCode == Activity.RESULT_OK) {
             setDataToAdapter();
         }
+    }
+
+    @Override
+    public void onEditStudentClicked(Student student) {
+        Intent editIntent = new Intent(ViewActivity.this, MainActivity.class);
+        editIntent.putExtra(MainActivity.BUNDLE_IS_EDIT, true);
+        editIntent.putExtra(MainActivity.BUNDLE_STUDENT, student);
+        startActivityForResult(editIntent, 900);
+    }
+
+    @Override
+    public void onDeleteStudentClicked(Student student) {
+        dbHelper.deleteStudent(student, dbHelper.getWritableDatabase());
+        setDataToAdapter();
     }
 }

@@ -76,4 +76,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return studentList;
     }
+
+    public void deleteStudent(Student student, SQLiteDatabase database){
+        database.delete(TABLE_NAME, COL_ID+"="+student.getId(), null);
+    }
+
+    public void updateStudent(Student student, SQLiteDatabase database){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COL_STU_ID, student.getStudentID());
+        contentValues.put(COL_STU_NAME, student.getStudentName());
+        contentValues.put(COL_STU_ROLL, student.getStudentRollNumber());
+        contentValues.put(COL_STU_REGN, student.getStudentRegistrationNumber());
+        contentValues.put(COL_STU_PHONE, student.getStudentPhoneNumber());
+        contentValues.put(COL_STU_EMAIL, student.getStudentEmailAddress());
+        contentValues.put(COL_STU_BLOOD, student.getStudentBloodGroup());
+
+        database.update(TABLE_NAME, contentValues, COL_ID+"="+student.getId(), null);
+    }
 }

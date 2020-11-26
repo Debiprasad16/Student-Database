@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -15,6 +16,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+
+    public static final String BUNDLE_IS_EDIT = "is edit";
+    public static final String BUNDLE_STUDENT = "student";
 
     private EditText dEtStudentID;
     private EditText dEtStudentName;
@@ -29,6 +33,9 @@ public class MainActivity extends AppCompatActivity {
 
     private DatabaseHelper dbHelper;
 
+    private boolean isEdit = false;
+    private Student editStudentInfo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +49,16 @@ public class MainActivity extends AppCompatActivity {
         dEtStudentEmailAddress = findViewById(R.id.et_stu_email_address);
 
         BloodGroup = findViewById(R.id.spn_blood_group);
-        String[] dBloodGroups = getResources().getStringArray(R.array.blood_group);
+        final String[] dBloodGroups = getResources().getStringArray(R.array.blood_group);
+
+        Button dBtnUpdate = findViewById(R.id.btnUpdate);
+
+        Bundle StudentData = getIntent().getExtras();
+
+        if(StudentData != null){
+            isEdit = StudentData.getBoolean(BUNDLE_IS_EDIT);
+            editStudentInfo = (Student) StudentData.getSerializable(BUNDLE_STUDENT);
+        }
 
         ArrayAdapter<String> BloodGroupAdapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, dBloodGroups);
         BloodGroup.setAdapter(BloodGroupAdapter);
@@ -62,6 +78,24 @@ public class MainActivity extends AppCompatActivity {
         });
 
         dbHelper = new DatabaseHelper(MainActivity.this);
+
+        if(isEdit && editStudentInfo != null){
+            dEtStudentID.setText(editStudentInfo.getStudentID());
+            dEtStudentName.setText(editStudentInfo.getStudentName());
+            dEtStudentRollNumber.setText(editStudentInfo.getStudentRollNumber());
+            dEtStudentRegistrationNumber.setText(String.valueOf(editStudentInfo.getStudentRegistrationNumber()));
+            dEtStudentPhoneNumber.setText(String.valueOf(editStudentInfo.getStudentPhoneNumber()));
+            dEtStudentEmailAddress.setText(editStudentInfo.getStudentEmailAddress());
+
+            for(int i=0; i<dBloodGroups.length; i++){
+                String blood = dBloodGroups[i];
+                if(blood.equals(editStudentInfo.getStudentBloodGroup())){
+                    BloodGroup.setSelection(i);
+                }
+            }
+
+            dBtnUpdate.setText("Edit Student");
+        }
     }
 
     public void onAdmitStudentClicked(View view){
@@ -103,7 +137,12 @@ public class MainActivity extends AppCompatActivity {
             newStu.setStudentEmailAddress(stuEmailAddress);
             newStu.setStudentBloodGroup(SelectedBloodGroup);
 
-            dbHelper.insertDataToDatabase(dbHelper.getWritableDatabase(), newStu);
+            if(isEdit){
+                newStu.setId(editStudentInfo.getId());
+                dbHelper.updateStudent(newStu, dbHelper.getWritableDatabase());
+            }else {
+                dbHelper.insertDataToDatabase(dbHelper.getWritableDatabase(), newStu);
+            }
 
             dEtStudentID.setText("");
             dEtStudentName.setText("");
@@ -115,10 +154,6 @@ public class MainActivity extends AppCompatActivity {
 
             setResult(Activity.RESULT_OK);
             finish();
-
-            /*ArrayList<Student> enteredStudentInfo = dbHelper.getStudentsFromDatabase(dbHelper.getReadableDatabase());
-            Toast.makeText(MainActivity.this, "Number of Data in Database "+enteredStudentInfo.size(), Toast.LENGTH_LONG);*/
-
 
             Intent StudentInfo = new Intent(MainActivity.this, ViewActivity.class);
             StudentInfo.putExtra("STUDENT", newStu);
